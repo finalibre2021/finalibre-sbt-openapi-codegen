@@ -1,2 +1,10 @@
 *.class
 *.log
+/src/sbt-test/sbt-swagger-codegen/dinero-spec/target/
+/src/sbt-test/sbt-swagger-codegen/dinero-spec/project/target/
+/project/target/
+/.bsp/
+/.idea/
+/target/
+/src/sbt-test/sbt-swagger-codegen/dinero-spec/project/project/
+/project/project/
