@@ -4,7 +4,7 @@ import sbt._
 lazy val root = (project in file("."))
   .enablePlugins(SbtPlugin)
   .settings(
-    name := "finalibre-sbt-swagger-codegen",
+    name := "finalibre-sbt-openapi-codegen",
     startYear := Some(2022),
     sbtPlugin := true,
     logLevel := Level.Info,
