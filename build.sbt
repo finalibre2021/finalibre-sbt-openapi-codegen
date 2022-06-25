@@ -8,6 +8,7 @@ lazy val root = (project in file("."))
     startYear := Some(2022),
     sbtPlugin := true,
     logLevel := Level.Info,
+    version := "1.0.1-SNAPSHOT",
     //crossScalaVersions := List("3.1.2", "3.0.2", "2.13.8", "2.12.16")
     //crossScalaVersions := List("2.13.8"),
     libraryDependencies ++= Seq(

@@ -2,7 +2,10 @@ package finalibre.sbt.openapi
 
 import sbt.*
 import sbt.plugins.JvmPlugin
-import sbt.Keys.{fullClasspath, javaHome, javaOptions, libraryDependencies}
+import sbt.Keys.{compile, fullClasspath, javaHome, javaOptions, libraryDependencies, resourceGenerators, sourceGenerators}
+
+import java.nio.file.{Files, Paths}
+import scala.io.Source
 
 object CodeGenPlugin extends AutoPlugin {
 
@@ -111,10 +114,16 @@ object CodeGenPlugin extends AutoPlugin {
     val openApiClientOutputFolder : SettingKey[Option[sbt.File]] = settingKey[Option[java.io.File]](
       "Optional output folder. If not specified, the default managed source folder is used"
     )
-    val openApiGenerateClient : TaskKey[Seq[sbt.File]] = TaskKey[Seq[java.io.File]](
+    val openApiGenerateClient : TaskKey[Seq[sbt.File]] = TaskKey[Seq[sbt.File]](
       "openapi-generate-client",
       "Calls the swagger codegen cli library to generate OpenAPI client"
     )
+
+    val openApiCollectSourceFiles : TaskKey[Seq[sbt.File]] = TaskKey[Seq[sbt.File]](
+      "openapi-collect-source-files",
+      "Collects source files"
+    )
+
     val openApiBuildJavaInstallation : SettingKey[Option[sbt.File]] = SettingKey[Option[File]](
       "openapi-build-java-installation",
       "The java.exe (or javaw.exe) to use for executing the swagger codegen CLI. If left blank, " +
@@ -171,7 +180,11 @@ object CodeGenPlugin extends AutoPlugin {
       (Compile / fullClasspath).value.foreach(fil => println(s"  ${fil.data.getAbsolutePath}"))
       val cliCodegenJar = (Compile / fullClasspath).value.find(_.data.getName.toLowerCase.matches("(?i)(swagger-codegen-cli.*jar)"))
       val swaggerFile = openApiSpecification.value
-      val javaCommand = (Compile / javaHome).value.map(_.getAbsolutePath).getOrElse("java")
+      val javaCommand = (Compile / openApiBuildJavaInstallation).value
+        .orElse((Compile / javaHome).value)
+        .map(_.getAbsolutePath)
+        .getOrElse("java")
+
       runSwaggerPlugin(
         swaggerFile,
         outDir,
@@ -205,7 +218,11 @@ object CodeGenPlugin extends AutoPlugin {
         openApiVerbose.value
 
       )
-    }
+    },
+    (Compile / openApiCollectSourceFiles) := {
+      (Compile / openApiGenerateClient).value
+    },
+    (Compile / sourceGenerators) += (Compile / openApiCollectSourceFiles)
   )
 
 
@@ -291,17 +308,29 @@ object CodeGenPlugin extends AutoPlugin {
 
     import scala.sys.process._
     val result = s"${javaCommand} -jar ${codegenJarPath} $argString"!;
-    println(s"Result from external project: $result")
-    println(s"Scanning output directory: ${outputDir}")
+    //println(s"Result from external project: $result")
+    //println(s"Scanning output directory: ${outputDir}")
+    log(s"Result from external project: $result")
+    log(s"Scanning output directory: ${outputDir}")
     collectFiles(outputDir)
+  }
+
+  def log(str : String) : Unit = {
+    Files.write(Paths.get("C:\\temp\\dinero-spec\\logs\\simple-log-" + System.currentTimeMillis() + ".txt"), str.getBytes("UTF-8"))
   }
 
   def collectFiles(dir : java.io.File, spaces : String = "") : Seq[java.io.File] = {
     println(dir)
-    dir.listFiles()
+    log(dir.getAbsolutePath)
+
+    val returnee = dir.listFiles()
       .filter(_ != null)
       .flatMap(f => if(f.isFile) List(f) else collectFiles(f, spaces + " "))
 
+    if(spaces == ""){
+      log(s"Collected the following ${returnee.length} generated files")
+    }
+    returnee
   }
 
 

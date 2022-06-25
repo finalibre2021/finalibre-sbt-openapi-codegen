@@ -1,0 +1,4 @@
+> set scriptedBufferLog := false
+compile
+
+$ exists generated/*.*
