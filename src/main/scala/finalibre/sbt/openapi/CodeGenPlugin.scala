@@ -30,7 +30,7 @@ object CodeGenPlugin extends AutoPlugin {
       "Version # for generated client"
     )
 
-    val openApiConfigFile : SettingKey[Option[File]] = settingKey[Option[File]](
+    val openApiConfigFile : SettingKey[Option[sbt.File]] = settingKey[Option[File]](
       "Optional config file for specifying properties of generation"
     )
 
@@ -90,7 +90,7 @@ object CodeGenPlugin extends AutoPlugin {
       "Skip overwrite during open API generation?"
     )
 
-    val openApiTemplatesDirectory : SettingKey[Option[File]] = settingKey[Option[File]](
+    val openApiTemplatesDirectory : SettingKey[Option[sbt.File]] = settingKey[Option[File]](
       "Template directory used for generated Open API client"
     )
     val openApiTypeMappings : SettingKey[Option[String]] = settingKey[Option[String]](
@@ -102,20 +102,20 @@ object CodeGenPlugin extends AutoPlugin {
 
 
 
-    val openApiSpecification : SettingKey[java.io.File] = settingKey[java.io.File](
+    val openApiSpecification : SettingKey[sbt.File] = settingKey[java.io.File](
       "The file containing the swagger json file to use for generating client"
     )
     val openApiClientLanguage : SettingKey[String] = settingKey[String](
       "The language (and flavor) for the generated client"
     )
-    val openApiClientOutputFolder : SettingKey[Option[java.io.File]] = settingKey[Option[java.io.File]](
+    val openApiClientOutputFolder : SettingKey[Option[sbt.File]] = settingKey[Option[java.io.File]](
       "Optional output folder. If not specified, the default managed source folder is used"
     )
-    val openApiGenerateClient : TaskKey[Seq[java.io.File]] = TaskKey[Seq[java.io.File]](
+    val openApiGenerateClient : TaskKey[Seq[sbt.File]] = TaskKey[Seq[java.io.File]](
       "openapi-generate-client",
       "Calls the swagger codegen cli library to generate OpenAPI client"
     )
-    val openApiBuildJavaInstallation : SettingKey[Option[File]] = SettingKey[Option[File]](
+    val openApiBuildJavaInstallation : SettingKey[Option[sbt.File]] = SettingKey[Option[File]](
       "openapi-build-java-installation",
       "The java.exe (or javaw.exe) to use for executing the swagger codegen CLI. If left blank, " +
         "this plugin expects the java installation to be resolved through the PATH variable"
